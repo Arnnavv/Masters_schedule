@@ -422,17 +422,47 @@ function renderWeekly() {
       const s = new Date(ev.start);
       return s.getFullYear()===d.getFullYear() && s.getMonth()===d.getMonth() && s.getDate()===d.getDate();
     }).sort((a,b)=>a.start-b.start);
+    // Group overlapping events and position side by side
+    const evGroups = [];
     dayEvs.forEach(ev => {
       const st=new Date(ev.start), en=new Date(ev.end);
-      const startMins=st.getHours()*60+st.getMinutes(), endMins=en.getHours()*60+en.getMinutes();
-      const topPx=(startMins-DAY_START*60)/60*HOUR_HEIGHT, heightPx=Math.max((endMins-startMins)/60*HOUR_HEIGHT,24);
-      if (topPx<0||topPx>totalHeight) return;
-      const el=document.createElement('div'); el.className='week-ev ev-'+ev.category;
-      el.style.top=topPx+'px'; el.style.height=heightPx+'px';
-      const title=document.createElement('div'); title.className='week-ev-title'; title.innerHTML=`<strong>${ev.title}</strong>`;
-      const time=document.createElement('div'); time.className='week-ev-time'; time.textContent=fmtTime(st)+'–'+fmtTime(en);
-      el.appendChild(title); if(heightPx>30) el.appendChild(time);
-      el.onclick=()=>openModal(ev); col.appendChild(el);
+      const startMins=st.getHours()*60+st.getMinutes();
+      const endMins=en.getHours()*60+en.getMinutes();
+      // Find a group this event overlaps with
+      let placed = false;
+      for (const group of evGroups) {
+        const overlaps = group.some(g => {
+          const gst=new Date(g.start).getHours()*60+new Date(g.start).getMinutes();
+          const gen=new Date(g.end).getHours()*60+new Date(g.end).getMinutes();
+          return startMins < gen && endMins > gst;
+        });
+        if (overlaps) { group.push(ev); placed=true; break; }
+      }
+      if (!placed) evGroups.push([ev]);
+    });
+    
+    evGroups.forEach(group => {
+      const total = group.length;
+      group.forEach((ev, idx) => {
+        const st=new Date(ev.start), en=new Date(ev.end);
+        const startMins=st.getHours()*60+st.getMinutes();
+        const endMins=en.getHours()*60+en.getMinutes();
+        const topPx=(startMins-DAY_START*60)/60*HOUR_HEIGHT;
+        const heightPx=Math.max((endMins-startMins)/60*HOUR_HEIGHT,24);
+        if (topPx<0||topPx>totalHeight) return;
+        const width = 100/total;
+        const left = width*idx;
+        const el=document.createElement('div'); el.className='week-ev ev-'+ev.category;
+        el.style.top=topPx+'px';
+        el.style.height=heightPx+'px';
+        el.style.left=`calc(${left}% + 3px)`;
+        el.style.right='auto';
+        el.style.width=`calc(${width}% - 6px)`;
+        const title=document.createElement('div'); title.className='week-ev-title'; title.innerHTML=`<strong>${ev.title}</strong>`;
+        const time=document.createElement('div'); time.className='week-ev-time'; time.textContent=fmtTime(st)+'–'+fmtTime(en);
+        el.appendChild(title); if(heightPx>30) el.appendChild(time);
+        el.onclick=()=>openModal(ev); col.appendChild(el);
+      });
     });
     grid.appendChild(col);
   });
