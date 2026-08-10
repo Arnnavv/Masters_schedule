@@ -140,7 +140,7 @@ main { padding: 28px 40px; max-width: 1300px; margin: 0 auto; }
 .week-day-col-wrap.today-day { background: #FAFEF8; }
 .week-hour-line { position: absolute; left: 0; right: 0; border-bottom: 1px solid var(--border); pointer-events: none; }
 .week-half-line { position: absolute; left: 0; right: 0; border-bottom: 1px dashed rgba(0,0,0,0.06); pointer-events: none; }
-.week-ev { position: absolute; left: 3px; right: 3px; border-radius: 6px; padding: 4px 7px; font-size: 11px; font-weight: 500; cursor: pointer; overflow: hidden; transition: opacity 0.15s, box-shadow 0.15s; line-height: 1.35; border-left: 3px solid rgba(0,0,0,0.15); z-index: 1; }
+.week-ev { position: absolute; border-radius: 6px; padding: 4px 7px; font-size: 11px; font-weight: 500; cursor: pointer; overflow: hidden; transition: opacity 0.15s, box-shadow 0.15s; line-height: 1.35; border-left: 3px solid rgba(0,0,0,0.15); z-index: 1; }
 .week-ev:hover { opacity: 0.85; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 2; }
 .week-ev.ev-common { background: var(--common-bg); color: var(--common); border-left-color: var(--common); }
 .week-ev.ev-finance { background: var(--finance-bg); color: var(--finance); border-left-color: var(--finance); }
